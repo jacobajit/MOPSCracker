@@ -1,0 +1,94 @@
+<html>
+<head>
+	<title>MOPS Cracker</title>
+	<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+	<link rel="import" href="/bower_components/polymer/polymer.html">
+	<link rel="import" href="/bower_components/paper-input/paper-input.html">
+	<link rel="import" href="/bower_components/paper-button/paper-button.html">
+	<link rel="import" href="/bower_components/paper-card/paper-card.html">	
+	<link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">		
+	<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+	<link rel="import" href="/bower_components/iron-icons/iron-icons.html">		
+	<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+	<style is="custom-style">
+		html{
+			font-family: 'Roboto', sans-serif;
+			font-size: 14px;
+			margin: 0;
+
+		}
+
+	</style>
+<body>
+	<dom-module id="app-main">
+	<template>
+	<paper-toolbar >
+<paper-icon-button icon="polymer">
+      </paper-icon-button>
+
+		<div class="title"> MOPS Cracker</div>
+
+	</paper-toolbar>
+	<paper-input value="{{topicNumber}}" label="Topic Number"></paper-input>
+	<paper-input value="{{asstNumber}}" label="Assignment Number"></paper-input>
+	<paper-input value="{{studentID}}" label="Student ID"></paper-input>
+	<paper-input value="{{teacherCode}}" label="Teacher Code"></paper-input>
+	<paper-button raised on-tap="updateParam" style="background-color:#3f51b5;color: #fff;">Generate Code</paper-button>
+
+  <br>
+  <template is="dom-if" if="{{show}}">
+  <br>
+  <br>
+  <paper-card heading="Gold Code">
+  <div class="card-content">{{textToDisplay}}</div>
+
+</paper-card>
+  
+	
+  
+	<iron-ajax
+    auto
+    url="https://mopscracker.herokuapp.com/index.lc"
+    params="{{textToSend}}"
+    handle-as="text"
+    last-response="{{textToDisplay}}"
+    debounce-duration="300"></iron-ajax>
+  </template>
+</template>
+
+  <script>
+  window.addEventListener('WebComponentsReady', function(e) {
+    Polymer({
+      is: 'app-main',
+      properties:{
+      		textToSend:{
+      			type:Object,
+      			notify:true
+      		},
+          show:{
+            type:Boolean,
+            value:false,
+            notify:true
+          }
+      },
+      updateParam:function(){
+      	console.log("updating")
+        this.show=true
+      	this.textToSend={}
+      	this.textToSend["topicNumber"]=this.topicNumber
+      	this.textToSend["asstNumber"]=this.asstNumber
+      	this.textToSend["studentID"]=this.studentID
+      	this.textToSend["teacherCode"]=this.teacherCode
+
+      }
+
+    });
+    });
+  </script>
+</dom-module>
+<app-main></app-main>
+</body>
+</html>

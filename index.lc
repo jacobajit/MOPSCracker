@@ -1,0 +1,128 @@
+
+<?lc 
+
+   put header "Access-Control-Allow-Origin: *"
+   --acquire data to create the code
+   put $_GET["topicNumber"] into topicNumber
+   put $_GET["asstNumber"] into asstNumber
+   
+   
+   
+   put $_GET["teacherCode"]  into teacherCode
+   put $_GET["studentID"] into studentID
+   
+   
+   --put item asstNumber of field "asstSeeds" of card "Data2" of stack storageStack  into asstSeed
+   --put item topicNumber of field "topicSeeds" of card "Data2"  of stack storageStack into topicSeed
+   
+   put "2387,6915,7724,3629,8591,7263,4958,6213,7791,8621,5948,8816" into asstSeeds
+   put "23958214,19763819,55387261,19459872,33461875,78851892,31428965,54971332,29873175,49821583,67239189,17547829,78312564,98123554,78129564,47891265" into topicSeeds
+   
+   put item asstNumber of asstSeeds into asstSeed
+   put item topicNumber of topicSeeds into topicSeed
+   
+   
+   put "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z" into letterListA
+   put "C,K,B,O,X,T,G,S,Z,A,I,N,D,U,P,H,Q,Y,E,J,F,W,V,L,R,M" into letterListB
+   put "N,K,L,A,O,I,T,Q,W,F,X,R,M,S,P,G,B,E,J,Z,C,H,U,Y,D,V" into letterListC
+   
+   --NOTE: A change was made IDProduct on 8/13/2015 (relative to the first MOP the App attempt)
+   put 0 into IDSum  -- to eventually be the sum of all digits in the ID#
+   put the number of chars in studentID into IDChars
+   repeat with i = 1 to IDChars
+      put IDSum + (char i of studentID) into IDSum
+   end repeat
+   
+   put 1 into IDProduct  --to eventually be the product of all non-zero digits in the ID#
+   repeat with i = (IDChars-3) to IDChars
+      if char i of studentID > 0 then
+         put IDProduct*(char i of studentID) into IDProduct
+      end if
+   end repeat
+   
+   put 0 into tCSumA --to eventually be the sum of all numerical equivalents (from list A) of letters in the teacherCode
+   put the number of chars in teacherCode into tCChars
+   repeat with i = 1 to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListA) + 1)/2 into locInLetterListA
+      put tCSumA + locInLetterListA into tCSumA
+   end repeat
+   
+   --NOTE: A change was made tCProductA on 8/13/2015 (relative to the first MOP the App attempt)
+   put 1 into tCProductA --to eventually be the product of all numerical equivalents (from list A) of letters in the teacherCode
+   repeat with i = (tCChars - 3) to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListA) + 1)/2 into locInLetterListA
+      put  tCProductA*locInLetterListA into tCProductA
+   end repeat
+   
+   put 0 into tCSumB --to eventually be the sum of all numerical equivalents (from list B) of letters in the teacherCode
+   repeat with i = 1 to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListB) + 1)/2 into locInLetterListB
+      put tCSumB + locInLetterListB into tCSumB
+   end repeat
+   
+   --NOTE: A change was made tCProductB on 8/13/2015 (relative to the first MOP the App attempt)
+   put 1 into tCProductB --to eventually be the product of all numerical equivalents (from list B) of letters in the teacherCode
+   repeat with i = (tCChars - 3) to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListB) + 1)/2 into locInLetterListB
+      put  tCProductB*locInLetterListB into tCProductB
+   end repeat
+   
+   put 0 into tCSumC --to be the sum of all numerical equivalents (from list C) of letters in the teacherCode
+   repeat with i = 1 to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListC) + 1)/2 into locInLetterListC
+      put tCSumC + locInLetterListC into tCSumC
+   end repeat
+   
+   
+   put 1 into tCProductC  --to be the product of all numerical equivalents (from list C) of letters in the teacherCode
+   repeat with i = (tCChars-3) to tCChars
+      put char i of teacherCode into j
+      put (offset(j, letterListC) + 1)/2 into locInLetterListC
+      put  tCProductC*locInLetterListC into tCProductC
+   end repeat
+   
+   --create varA, varB, ... varF
+   put 7*IDSum + (char 1 to 3 of studentID) + 3*(the last char of studentID) + IDProduct*asstSeed + char 6 to 7 of topicSeed + tCSumA into varA
+   put studentID - IDSum + 3*topicNumber + 5*(char 5 of studentID) - char 7 of topicSeed + tCSumB*(char (IDChars-1) to IDChars of studentID) into varB 
+   put 3*(char 1 to 3 of studentID) + IDSum*(char 1 of topicSeed) + IDProduct*3 - (char 2 to 3 of topicSeed) + (char 1 to 2 of asstSeed)*(char 7 of topicSeed) + tCSumC into varC
+   put 2*(char 6 of studentID) + 5*(char (IDChars - 1) of studentID) + tCProductA + (char 3 to 5 of topicSeed) + (char 2 of TCProductA)*(char 3 to 4 of asstSeed) + asstNumber*(last char of studentID) into varD
+   put 5*IDProduct + 7*topicNumber + (asstNumber+2)*(char 2 of asstSeed)*(char 5 to 7 of topicSeed) + tCProductB - 3*tCSumB into varE
+   put topicNumber*tCSumC + IDSum*(asstNumber + tCSumC)*(char 3 to 4 of asstSeed)*(char 1 to 2 of topicSeed) + 3*(char (IDChars-2) to IDChars of studentID) into varF
+   
+   
+   
+   
+   
+   --now begin using the above vars with the [1 + (X mod 26)] format and letterLists to create the Code
+   --CAUTION: none of the itemNumbers (e.g., gLetter1itemNumber) can be decimals; use round if necessary
+   
+   --here's the gold code
+   put 1 + ((varA + varC) mod 26) into gLetter1itemNumber
+   put item gLetter1itemNumber of letterListA into gletter1
+   put 1 + ((varA + varB + varD) mod 26) into gLetter2itemNumber
+   put item gLetter2itemNumber of letterListB into gletter2
+   put 1 + ((varA + varD + varE) mod 26) into gLetter3itemNumber
+   put item gLetter3itemNumber of letterListC into gletter3
+   put 1 + ((varA*2 + varB + varF*3) mod 26) into gLetter4itemNumber
+   put item gLetter4itemNumber of letterListA into gletter4
+   put 1 + ((varA*3 + varB*2 + varE + varF) mod 26) into gLetter5itemNumber
+   put item gLetter5itemNumber of letterListA into gletter5
+   put 1 + ((varB*3 + varC*5 + varD*4 + varE*4) mod 26) into gLetter6itemNumber
+   put item gLetter6itemNumber of letterListC into gletter6
+   put 1 + ((varD*7 + varA + varF*3 + varE) mod 26) into gLetter7itemNumber
+   put item gLetter7itemNumber of letterListB into gletter7
+   
+   --put the letters together to form the code
+   put  "g" & gletter1 & gletter2 & "-" & gletter3 & gletter4 & "-" & gletter5 & gletter6 & gletter7 into goldCode
+   --put goldCode into field "GoldCode" of card "Success" of stack asstStack
+   
+   put goldCode
+
+
+
+ ?>
